@@ -5,41 +5,82 @@ import Control.Monad.Except
 
 %wrapper "basic"
 
+$digit      = [0-9]
+$octdig     = [0-7]
+$hexdig     = [0-9A-Fa-f]
+$special    = [\.\;\,\$\|\*\+\?\#\~\-\{\}\(\)\[\]\^\/]
+$graphic    = $printable # $white
 
 @nombre = [0-9]+
 @espace = [\ \t \n]
 @float = @nombre"."@nombre
 @bool = "True" | "False"
-@string = [a-z]+
-@type = "" | "" | ""
-@variable = [a-z][a-zA-Z0-9]*
+@string = "'".[a-zA-Z0-9\ \t]+."'"
+@variable = [a-z].[a-zA-Z0-9]*
+@begin = "Begin"
+@end = "End;"
+@var = "Var"
+@epsilon = "£"
+@affectation = ":="
+@if = "If"
+@then = "Then"
+@else = "Else"
+@while = "While"
+@do = "Do"
+@for = "For"
+@to = "To"
+@writeln = "Writeln"
+@and = "And"
+@or = "Or"
+
 
 tokens :-
   @nombre     { \s-> NOMBRE (read s :: Int) }
   @float      { \s-> FLOAT (read s :: Float) }
+  @variable   { \s-> VARIABLE (show s :: String ) }
+  @string     { \s-> STRING (show s :: String ) }
+  @bool       { \s-> BOOLEAN (read s :: Bool) }
+  @begin      { \_-> BEGIN }
+  @end        { \_-> END }
+  @var        { \_-> VAR }
+  @epsilon    { \_-> EPSILON }
+  @affectation { \_-> AFFECTATION }
+  @if           { \_-> IF }
+  @then         { \_-> THEN }
+  @else         { \_-> ELSE }
+  @while        { \_-> WHILE }
+  @do           { \_-> DO }
+  @for          { \_-> FOR }
+  @to           { \_-> TO }
+  @writeln      { \_-> WRITELN }
+  @espace     ;
+  @and          { \_-> AND }
+  @or           { \_-> OR }
   \+          { \_-> PLUS    }
   \-          { \_-> MOINS   }
   \*          { \_-> MULT    }
   \/          { \_-> DIV     }
   \%          { \_-> MOD     }
+  \:          { \_-> DEUXPOINTS }
   \(          { \_-> PARENTG }
   \)          { \_-> PARENTD }
   \=          { \_-> EQUAL }
-  \:=         { \_-> VARIABLE }
-  @string     { \s-> STRING (show s :: [Char])}
+  \,          { \_-> VIRGULE }
   \¬          { \_-> NOT }
-  @bool       { \s-> BOOLEAN (read s :: Bool) }
-  @espace     ;
-
-
+  \;          { \_-> POINTVIRGULE }
+  \<>         { \_-> DIFFERENT }
+  \>          { \_-> SUPERIEUR }
+  \<          { \_-> INFERIEUR }
+  \>=         { \_-> SUPERIEUREQ }
+  \<=         { \_-> INFERIEUREQ }
 
 {
-
 data Token =
        NOMBRE Int
      | FLOAT Float
      | BOOLEAN Bool
-     | STRING [Char]
+     | STRING String
+     | VARIABLE String
      | NOT
      | PLUS
      | MOINS
@@ -47,9 +88,31 @@ data Token =
      | EQUAL
      | DIV
      | MOD
-     | VARIABLE
+     | VIRGULE
      | PARENTG
      | PARENTD
+     | POINTVIRGULE
+     | DEUXPOINTS
+     | DIFFERENT
+     | SUPERIEUR
+     | INFERIEUR
+     | INFERIEUREQ
+     | SUPERIEUREQ
+     | AND
+     | OR
+     | VAR
+     | BEGIN
+     | END
+     | EPSILON
+     | AFFECTATION
+     | IF
+     | THEN
+     | ELSE
+     | WHILE
+     | DO
+     | FOR
+     | TO
+     | WRITELN
     deriving (Eq, Show)
 
 scanTokens :: String -> Except String [Token]

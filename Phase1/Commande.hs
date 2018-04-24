@@ -1,5 +1,5 @@
 
-module AST where
+module Commande where
 
 data Programme_a =
     ProgEpsilon
@@ -24,17 +24,13 @@ data Type_a =
   | TypeCharacter   Char
   deriving (Eq, Show)
 
-checkType (TypeNum _) (TypeNum _) = True
-
-checkType _ _ = False
-
 data Variable_a =
     VarVariable  String
   | VarVariables String Variable_a
   deriving (Eq, Show)
 
 data Expression_a =
-    ExpPlus  Type_a Expression_a
+    ExpPlus  Expression_a Expression_a
   | ExpMoins Expression_a Expression_a
   | ExpMult  Expression_a Expression_a
   | ExpDiv   Expression_a Expression_a
@@ -50,34 +46,3 @@ data Expression_a =
   | ExpEqual Expression_a Expression_a
   | ExpType Type_a
   deriving (Eq,Show)
-
-x = TypeNum 5
-d = ExpPlus (TypeNum 5) (ExpNeg (ExpType (TypeNum 5)))
-
-
-
-
-evaluateAST (ExpType a)  =  a
-
-
-{-
-
-evaluateAST (ExpPlus a b) =
-  case (a, b) of
-    () ->
-
-
-evaluate (Mod a b) =
-  case (evaluate a, evaluate b) of
-  (Floatant x, _)   -> error "Impossible de faire un modulo avec une Float"
-  (_, Floatant y)  -> error "Impossible de faire un modulo avec une Float"
-  (Num x, Num y)   -> Num (x `mod` y)
-
-evaluate (Neg x) =
-  case (evaluate x) of
-    (Num a)       -> Num (-a)
-    (Floatant a)  -> Floatant (-a)
-
-
-
--}
